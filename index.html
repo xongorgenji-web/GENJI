@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenjiStore</title>
-
-<style>
+<title>GenjiStore</title><style>
 body{margin:0;font-family:Arial;background:#f4f6f9}
 
 /* HEADER */
@@ -104,54 +101,59 @@ footer{text-align:center;padding:15px;color:#777;background:#fff;margin-top:20px
 .admin{display:none;background:#fff;padding:15px;border-top:3px solid #6a1b9a}
 .admin input,.admin textarea{width:100%;padding:10px;margin:6px 0}
 .admin button{padding:12px;background:#6a1b9a;color:#fff;border:none;width:100%}
-</style>
-</head>
-
-<body>
-
-<header>
+</style></head><body><header>
 <img src="https://i.postimg.cc/Vvq0TzYZ/file-00000000914471f88063a28abf67d7bc.png">
 <div>
 <h1 style="margin:0">GenjiStore</h1>
 <p style="margin:0;font-size:14px">Smart Shopping • Better Prices</p>
 </div>
-</header>
-
-<div class="search">
+</header><div class="search">
 <input id="search" placeholder="Search..." onkeyup="renderProducts()">
-</div>
-
-<div class="container">
+</div><div class="container">
 <div class="grid" id="grid"></div>
-</div>
-
-<footer>© 2026 GenjiStore • Powered by Genji 💜</footer>
-
-<!-- PRODUCT POPUP -->
-<div class="popup" id="popup">
+</div><footer>© 2026 GenjiStore • Powered by Genji 💜</footer><!-- PRODUCT POPUP --><div class="popup" id="popup">
 <div class="popup-content" id="popupContent"></div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="admin" id="adminPanel">
+</div><!-- ADMIN PANEL --><div class="admin" id="adminPanel">
 <h3>Add Product</h3>
 <input id="pname" placeholder="Product Name">
 <input id="pimg" placeholder="Image URL">
 <input id="pprice" placeholder="Price">
 <textarea id="pdesc" placeholder="Description"></textarea>
 <button onclick="addProduct()">Add Product</button>
-</div>
+</div><!-- 🔥 FIREBASE (ONLY CHANGE) --><script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig={
+apiKey:"AIzaSyAXFjXQCVJTdnh3DVBup9wBtLymWBl3kq0",
+authDomain:"projectgenji-96a0a.firebaseapp.com",
+databaseURL:"https://projectgenji-96a0a-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"projectgenji-96a0a",
+storageBucket:"projectgenji-96a0a.firebasestorage.app",
+messagingSenderId:"540025118438",
+appId:"1:540025118438:web:42fc51f610d923e1586527"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+
 const WA="918731048644"
 const IG="genji_xongor"
 
-let products=JSON.parse(localStorage.getItem("products")||"[]")
+let products=[];
 
-function renderProducts(){
-let grid=document.getElementById("grid")
-let s=document.getElementById("search").value.toLowerCase()
-grid.innerHTML=""
+/* LOAD PRODUCTS FROM CLOUD */
+onValue(ref(db,"products"),snap=>{
+products=[];
+snap.forEach(c=>products.push(c.val()));
+renderProducts();
+});
+
+window.renderProducts=function(){
+let grid=document.getElementById("grid");
+let s=document.getElementById("search").value.toLowerCase();
+grid.innerHTML="";
 
 products
 .filter(p=>p.name.toLowerCase().includes(s))
@@ -161,13 +163,13 @@ grid.innerHTML+=`
 <img src="${p.img}">
 <div class="title">${p.name}</div>
 <div class="price">₹${p.price}</div>
-</div>`
-})
-}
+</div>`;
+});
+};
 
-function openPopup(i){
-let p=products[i]
-document.getElementById("popup").style.display="flex"
+window.openPopup=function(i){
+let p=products[i];
+document.getElementById("popup").style.display="flex";
 
 document.getElementById("popupContent").innerHTML=`
 <span class="close" onclick="closePopup()">❌</span>
@@ -186,38 +188,33 @@ Order WhatsApp
 href="https://instagram.com/${IG}" target="_blank">
 Order Instagram
 </a>
-`
-}
+`;
+};
 
-function closePopup(){
-document.getElementById("popup").style.display="none"
-}
+window.closePopup=function(){
+document.getElementById("popup").style.display="none";
+};
 
-function addProduct(){
-let p={
+/* ADD PRODUCT TO CLOUD */
+window.addProduct=function(){
+push(ref(db,"products"),{
 name:pname.value,
 img:pimg.value,
 price:pprice.value,
 desc:pdesc.value
-}
-products.push(p)
-localStorage.setItem("products",JSON.stringify(products))
-renderProducts()
-alert("Product Added!")
-}
+});
+alert("Product Added 💰");
+};
 
 /* TRIPLE TAP FOOTER → ADMIN */
-let taps=0
+let taps=0;
 document.querySelector("footer").addEventListener("click",()=>{
-taps++
-setTimeout(()=>taps=0,600)
+taps++;
+setTimeout(()=>taps=0,600);
 if(taps===3){
-document.getElementById("adminPanel").style.display="block"
+document.getElementById("adminPanel").style.display="block";
 }
-})
+});
 
-renderProducts()
-</script>
-
-</body>
+</script></body>
 </html>
